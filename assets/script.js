@@ -1,15 +1,14 @@
-// create button to clear the city array
-// add functionality to pull current location weather if no current city selected?
+
 
 var cityList = [];
 var id = "5859ec0dbfd9ff0a36abca355158892e";
 
-// stores cityList in localStorage
+
 function storeCities() {
     localStorage.setItem("cities", JSON.stringify(cityList));
 }
 
-// adds last searched city to list-group as button for user to select city
+
 function createCityList(){
     $(".cityList").empty();
     cityList.forEach(function(city) {
@@ -17,7 +16,7 @@ function createCityList(){
     })
 }
 
-// loads cityList from local storage and calls api to get data for last searched city if it exists
+
 function init() {
     var storedCities = JSON.parse(localStorage.getItem("cities"));
 
@@ -34,7 +33,7 @@ function init() {
     }
 }
 
-// gets current forecast for selected city and calls uv index function
+// gets current forecast for selected city n
 function getCurrentWeather(thisCity, id) {
     var weatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${thisCity}&units=imperial&appid=${id}`;
     var cityLat;
@@ -88,3 +87,45 @@ function getForecast(thisCity, id) {
 
     })
 }
+
+
+
+function getUVI(id, cityLat, cityLong) {
+    var uvURL = `https://api.openweathermap.org/data/2.5/uvi?lat=${cityLat}&lon=${cityLong}&appid=${id}`;
+
+    $.ajax({
+        url: uvURL,
+        method: "GET"
+    }).then(function (data) {
+        $(".cityToday").append(`<p>UV Index: <span class="badge badge-danger p-2">${data.value}</span></p>`);
+    })
+}
+
+
+function displayCityWeather() {
+    var thisCity = $(this).attr("data-city");
+
+    $(".cityToday").empty();
+    getCurrentWeather(thisCity, id);
+
+    $(".forecast").empty();
+    getForecast(thisCity, id);
+    
+}
+
+// calls main on page load function
+init();
+
+// submit event 
+$("form").on("submit", function(event) {
+    event.preventDefault();
+    console.log("im here!")
+    var newCity = $("#citySearchInput").val().trim();
+    cityList.push(newCity);
+    createCityList();
+    storeCities();
+    $("#citySearchInput").val("");
+})
+
+//  calls displayCityWeather
+$(".cityList").on("click", ".cityButton", displayCityWeather);
