@@ -33,7 +33,7 @@ function init() {
     }
 }
 
-// gets current forecast for selected city n
+// gets  forecast for selected city 
 function getCurrentWeather(thisCity, id) {
     var weatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${thisCity}&units=imperial&appid=${id}`;
     var cityLat;
